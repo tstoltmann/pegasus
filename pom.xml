@@ -76,11 +76,6 @@
 			<version>20021118</version>
 		</dependency>
 		<dependency>
-			<groupId>xmlrpc</groupId>
-			<artifactId>xmlrpc</artifactId>
-			<version>2.0.1</version>
-		</dependency>
-		<dependency>
 			<groupId>postgresql</groupId>
 			<artifactId>postgresql</artifactId>
 			<version>8.1-404.jdbc3</version>
@@ -135,7 +130,18 @@
 				        <property name="test_classpath" refid="maven.test.classpath"/>
 				        <property name="plugin_classpath" refid="maven.plugin.classpath"/>
  								<ant antfile="build.xml" target="dist"/>
-								<copy file="dist/pegasus-${project.version}/share/pegasus/java/pegasus.jar" tofile="${project.build.directory}/pegasus-${project.version}.jar" />
+								<!--Copy all classes build by ant except the example classes -->
+								<copy todir="${project.build.directory}/classes">
+									<fileset dir="build/main/classes">
+										<exclude name="examples/**" />
+									</fileset>
+								</copy>
+								<copy todir="${project.build.directory}/test-classes">
+									<fileset dir="build/tests/classes"/>
+								</copy>
+								<!--Copy the jars build by ant (will be attached using their own classifier)-->
+								<copy file="dist/pegasus-${project.version}/share/pegasus/java/pegasus.jar" tofile="${project.build.directory}/pegasus-${project.version}-planner.jar" />
+								<copy file="dist/pegasus-${project.version}/share/pegasus/java/vdl.jar" tofile="${project.build.directory}/pegasus-${project.version}-vdl.jar" />
 				      </tasks>
 				    </configuration>
 				    <goals>
@@ -144,7 +150,6 @@
 				  </execution>
 				</executions>
 			</plugin>
-			<!--Not required, since we replace the main artifact using ant
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>build-helper-maven-plugin</artifactId>
@@ -159,15 +164,20 @@
 						<configuration>
 						  <artifacts>
 						    <artifact>
-						      <file>${project.build.directory}/pegasus-${project.version}.jar</file>
+						      <file>${project.build.directory}/pegasus-${project.version}-planner.jar</file>
 						      <type>jar</type>
+									<classifier>planner</classifier>
+						    </artifact>
+						    <artifact>
+						      <file>${project.build.directory}/pegasus-${project.version}-vdl.jar</file>
+						      <type>jar</type>
+									<classifier>vdl</classifier>
 						    </artifact>
 						  </artifacts>
 						</configuration>
 					</execution>
 				</executions>
 			</plugin>
-			-->
 		</plugins>
 	</build>
 </project>
