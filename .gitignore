@@ -1,5 +1,6 @@
 .pc
 build
+target
 dist
 *stamp
 .classpath
